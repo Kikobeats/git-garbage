@@ -24,6 +24,6 @@ echo
 read -rp "  Will be removed. Continue? (y/N) " -n 1
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-  MESSAGE=$(git for-each-ref --format "%(refname:short)" refs/heads/ | egrep -v "$GREP_CMD" | xargs git branch -d)
+  MESSAGE=$(git for-each-ref --format "%(refname:short)" refs/heads/ --merged | egrep -v "$GREP_CMD" | xargs git branch -d)
   echo && echo && echo "$MESSAGE" | sed 's/Deleted/  Deleted/g'
 fi
