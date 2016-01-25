@@ -2,7 +2,7 @@
   "name": "git-garbage",
   "description": "Delete local git branches after deleting them on the remote repository.",
   "homepage": "https://github.com/Kikobeats/git-garbage",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "bin": "garbage.sh",
   "author": {
     "email": "josefrancisco.verdu@gmail.com",
