@@ -1,5 +1,11 @@
 # git-garbage
 
+<p align="center">
+  <br>
+  <img src="demo.png" alt="git-garbage">
+  <br>
+</p>
+
 > Delete local git branches after deleting them on the remote repository.
 
 ## Install
