@@ -10,20 +10,19 @@ if ! git fetch --quiet 2> /dev/null; then
   exit 128;
 fi
 
-EXCLUDE_BRANCHS="*|master"
-NEGATIVE_GREP="^\\"
-GREP_CMD=$NEGATIVE_GREP$EXCLUDE_BRANCHS
-BRANCHES=$(git branch --merged | egrep -v "$GREP_CMD")
+CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 
+garbage() {
+  git for-each-ref --format "${1:-}%(refname:short)" refs/heads/ --merged | egrep -v "$CURRENT_BRANCH"
+}
+
+BRANCHES=$(garbage "  ")
 [[ -z  $BRANCHES  ]] && echo "\n  Nothing to garbage." && exit
 
-echo
-echo "$BRANCHES"
-echo
-
+echo && echo "$BRANCHES" && echo
 read -rp "  Will be removed. Continue? (y/N) " -n 1
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-  MESSAGE=$(git for-each-ref --format "%(refname:short)" refs/heads/ --merged | egrep -v "$GREP_CMD" | xargs git branch -d)
+  MESSAGE=$(garbage | xargs git branch -d)
   echo && echo && echo "$MESSAGE" | sed 's/Deleted/  Deleted/g'
 fi
