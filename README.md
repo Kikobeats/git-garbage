@@ -14,6 +14,8 @@
 npm install --global git-garbage
 ```
 
+**NOTE:** Need the git version 2.7.1 or above.
+
 ## Usage
 
 ```sh
