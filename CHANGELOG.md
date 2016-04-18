@@ -1,3 +1,16 @@
+<a name="1.1.1"></a>
+## 1.1.1 (2016-04-18)
+
+* Add related section ([69a5a7f](https://github.com/kikobeats/git-garbage/commit/69a5a7f))
+* add screen ([8279092](https://github.com/kikobeats/git-garbage/commit/8279092))
+* adjust shell ([0044f8a](https://github.com/kikobeats/git-garbage/commit/0044f8a))
+* Adjust style ([ad4f10b](https://github.com/kikobeats/git-garbage/commit/ad4f10b))
+* improve script ([f49dcca](https://github.com/kikobeats/git-garbage/commit/f49dcca))
+* Release 1.1.0 ([7daeef4](https://github.com/kikobeats/git-garbage/commit/7daeef4))
+* Update README.md ([0373633](https://github.com/kikobeats/git-garbage/commit/0373633))
+
+
+
 <a name="1.1.0"></a>
 # 1.1.0 (2016-02-09)
 
