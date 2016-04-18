@@ -17,7 +17,11 @@ garbage() {
 }
 
 BRANCHES=$(garbage "  ")
-[[ -z  $BRANCHES  ]] && echo "\n  Nothing to garbage." && exit
+
+if [[ -z  $BRANCHES ]]; then
+  printf "\n  Nothing to garbage."
+  exit
+fi
 
 echo && echo "$BRANCHES" && echo
 read -rp "  Will be removed. Continue? (y/N) " -n 1
