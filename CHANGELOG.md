@@ -1,3 +1,10 @@
+<a name="1.1.2"></a>
+## 1.1.2 (2016-06-05)
+
+* Use 1 code exit instead of 128 ([babe5dd](https://github.com/kikobeats/git-garbage/commit/babe5dd))
+
+
+
 <a name="1.1.1"></a>
 ## 1.1.1 (2016-04-18)
 
