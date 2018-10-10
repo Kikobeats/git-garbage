@@ -1,5 +1,7 @@
 # git-garbage
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/Kikobeats/git-garbage.svg)](https://greenkeeper.io/)
+
 <p align="center">
   <br>
   <img src="demo.png" alt="git-garbage">
