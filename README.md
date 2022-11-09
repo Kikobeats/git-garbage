@@ -6,15 +6,13 @@
   <br>
 </p>
 
-> Delete local git branches after deleting them on the remote repository.
+> It deletes merged/squashed local git branches after deleting them on the remote repository.
 
 ## Install
 
 ```bash
 npm install --global git-garbage
 ```
-
-**NOTE:** Need the git version 2.7.1 or above.
 
 ## Usage
 
