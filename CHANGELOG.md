@@ -1,3 +1,14 @@
+# Changelog
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### 1.1.3 (2022-11-09)
+
+
+### Bug Fixes
+
+* add nano-staged config ([c981ae9](https://github.com/kikobeats/git-garbage/commit/c981ae9b9a4eb35078df3b43b0dfbcb39e64d715))
+
 <a name="1.1.2"></a>
 ## 1.1.2 (2016-06-05)
 
@@ -42,6 +53,3 @@
 * Adjust ([dc2db75](https://github.com/kikobeats/git-garbage/commit/dc2db75))
 * first commit ([cb143b2](https://github.com/kikobeats/git-garbage/commit/cb143b2))
 * Release 1.0.0 ([261a92e](https://github.com/kikobeats/git-garbage/commit/261a92e))
-
-
-
