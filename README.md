@@ -1,8 +1,6 @@
-# git-garbage
-
 <p align="center">
   <br>
-  <img src="demo.png" alt="git-garbage">
+  <img src="logo.png" alt="git-garbage">
   <br>
 </p>
 
@@ -16,9 +14,11 @@ npm install --global git-garbage
 
 ## Usage
 
-```sh
-git-garbage
-```
+<p align="center">
+  <br>
+  <img src="demo.png" alt="git-garbage">
+  <br>
+</p>
 
 ## Related 
 
