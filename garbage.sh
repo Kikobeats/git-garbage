@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if test -n "$(git status --porcelain)"; then
   echo 'Unclean working tree. Commit or stash changes first.' >&2;
@@ -10,23 +10,36 @@ if ! git fetch --quiet 2> /dev/null; then
   exit 1;
 fi
 
-CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+current="$(git rev-parse --abbrev-ref HEAD)"
 
-garbage() {
-  git for-each-ref --format "${1:-}%(refname:short)" refs/heads/ --merged | egrep -v "$CURRENT_BRANCH"
-}
+declare -a branches
 
-BRANCHES=$(garbage "  ")
+# merged
+for branch in $(git for-each-ref --format "%(refname:short)" refs/heads/ --merged | grep -E -v "$current"); do
+  branches+=("$branch")
+done
 
-if [[ -z  $BRANCHES ]]; then
+# squashed
+for branch in $(git for-each-ref --format "%(refname:short)" refs/heads/); do
+  mergeBase=$(git merge-base "$current" "$branch")
+  if [[ $(git cherry "$current" "$(git commit-tree "$(git rev-parse "$branch^{tree}")" -p "$mergeBase" -m _)") == "-"* ]]; then
+    branches+=("$branch")
+  fi
+done
+
+if [[ ${#branches[@]} -eq 0 ]]; then
   printf "\n  Nothing to garbage."
   exit
 fi
 
-echo && echo "$BRANCHES" && echo
+echo
+printf '  %s\n' "${branches[@]}"
+echo
+
 read -rp "  Will be removed. Continue? (y/N) " -n 1
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-  MESSAGE=$(garbage | xargs git branch -d)
-  echo && echo && echo "$MESSAGE" | sed 's/Deleted/  Deleted/g'
+  echo && echo
+  message=$(git branch -D "${branches[@]}")
+  echo "${message//Deleted/  Deleted}"
 fi
