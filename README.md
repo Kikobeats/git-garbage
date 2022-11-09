@@ -26,4 +26,8 @@ npm install --global git-garbage
 
 ## License
 
-MIT © [Kiko Beats](http://kikobeats.com)
+**miconfig** © [Kiko Beats](https://kikobeats.com), released under the [MIT](https://github.com/Kikobeats/git-garbage/blob/master/LICENSE.md) License. Logo by [Absurd Design](https://absurd.design).<br>
+
+Authored and maintained by [Kiko Beats](https://kikobeats.com) with help from [contributors](https://github.com/Kikobeats/miconfig/contributors).
+
+> [kikobeats.com](https://kikobeats.com) · GitHub [Kiko Beats](https://github.com/Kikobeats) · Twitter [@Kikobeats](https://twitter.com/Kikobeats)
