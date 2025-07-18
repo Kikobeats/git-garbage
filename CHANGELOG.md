@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.1.11 (2025-07-18)
+
+
+### Bug Fixes
+
+* improve PR branch detection and fix branch filtering logic ([a649359](https://github.com/kikobeats/git-garbage/commit/a64935929003d132a7c51461f5273dbac3c2472c))
+
 ### 1.1.10 (2025-07-14)
 
 ### 1.1.9 (2023-12-03)
