@@ -14,7 +14,19 @@ current="$(git rev-parse --abbrev-ref HEAD)"
 
 declare -a branches
 
-# merged
+# Check if a branch was part of remote workflow (pushed at some point)
+was_pushed() {
+  local branch="$1"
+  # Has remote tracking configured
+  git config --get "branch.$branch.remote" > /dev/null 2>&1 && return 0
+  # Has a remote tracking branch
+  git show-ref --verify --quiet "refs/remotes/origin/$branch" && return 0
+  # Has merge commits referencing this branch (PR workflow evidence)
+  [[ -n $(git log --oneline --grep="$branch" --merges -1 2>/dev/null) ]] && return 0
+  return 1
+}
+
+# merged (no was_pushed check: remote may be gone after PR merge)
 for branch in $(git for-each-ref --format "%(refname:short)" refs/heads/ --merged); do
   if [[ "$branch" != "$current" ]]; then
     branches+=("$branch")
@@ -23,36 +35,53 @@ done
 
 # squashed
 for branch in $(git for-each-ref --format "%(refname:short)" refs/heads/); do
-  if [[ "$branch" != "$current" ]]; then
+  if [[ "$branch" != "$current" ]] && was_pushed "$branch"; then
     mergeBase=$(git merge-base "$current" "$branch")
     if [[ $(git cherry "$current" "$(git commit-tree "$(git rev-parse "$branch^{tree}")" -p "$mergeBase" -m _)") == "-"* ]]; then
-      branches+=("$branch")
+      # Avoid duplicates
+      if [[ ! " ${branches[*]} " =~ " $branch " ]]; then
+        branches+=("$branch")
+      fi
     fi
   fi
 done
 
 # branches that were part of PR workflow (feature branches with remote deleted)
 for branch in $(git for-each-ref --format "%(refname:short)" refs/heads/); do
-  if [[ "$branch" != "$current" ]]; then
-    # Check if branch has commits not in main (indicating it was a feature branch)
+  if [[ "$branch" != "$current" ]] && was_pushed "$branch"; then
     if [[ $(git rev-list --count "$current..$branch" 2>/dev/null) -gt 0 ]]; then
-      # Check if remote branch doesn't exist (indicating PR was closed and branch deleted)
       if ! git show-ref --verify --quiet "refs/remotes/origin/$branch"; then
-        # Check if branch is already in our list to avoid duplicates
-        branch_exists=false
-        for existing_branch in "${branches[@]}"; do
-          if [[ "$existing_branch" == "$branch" ]]; then
-            branch_exists=true
-            break
-          fi
-        done
-        if [[ "$branch_exists" == false ]]; then
+        if [[ ! " ${branches[*]} " =~ " $branch " ]]; then
           branches+=("$branch")
         fi
       fi
     fi
   fi
 done
+
+# branches whose upstream tracking was deleted on remote
+while IFS= read -r line; do
+  branch="${line%% *}"
+  if [[ "$branch" != "$current" ]] && [[ ! " ${branches[*]} " =~ " $branch " ]]; then
+    branches+=("$branch")
+  fi
+done < <(git for-each-ref --format "%(refname:short) %(upstream:track)" refs/heads/ | grep '\[gone\]')
+
+# branches with closed/merged PRs (requires gh CLI)
+if command -v gh &> /dev/null && gh auth status &> /dev/null; then
+  pr_branches=$(gh pr list --state all --json headRefName,state \
+    --jq '[.[] | select(.state != "OPEN")] | .[].headRefName' \
+    --limit 500 2>/dev/null | sort -u)
+  if [[ -n "$pr_branches" ]]; then
+    for branch in $(git for-each-ref --format "%(refname:short)" refs/heads/); do
+      if [[ "$branch" != "$current" ]] && [[ ! " ${branches[*]} " =~ " $branch " ]]; then
+        if echo "$pr_branches" | grep -qxF "$branch"; then
+          branches+=("$branch")
+        fi
+      fi
+    done
+  fi
+fi
 
 if [[ ${#branches[@]} -eq 0 ]]; then
   printf "\n  Nothing to garbage."
