@@ -1,6 +1,6 @@
 {
   "name": "git-garbage",
-  "description": "Delete local git branches after deleting them on the remote repository.",
+  "description": "Delete local git branches that were already removed on the remote after prune.",
   "homepage": "https://github.com/Kikobeats/git-garbage",
   "version": "1.1.20",
   "bin": {
@@ -20,9 +20,16 @@
     "url": "https://github.com/Kikobeats/git-garbage/issues"
   },
   "keywords": [
+    "branches",
+    "cleanup",
     "cli",
+    "delete",
     "garbage",
-    "git"
+    "git",
+    "housekeeping",
+    "local",
+    "prune",
+    "remote"
   ],
   "devDependencies": {
     "@commitlint/cli": "latest",
