@@ -20,6 +20,8 @@ npm install --global git-garbage
   <br>
 </p>
 
+A branch checked out in a linked worktree is removed together with its worktree. It is skipped when that worktree has uncommitted changes, is locked, or is the main checkout.
+
 ## Related 
 
 * [git-dirty](https://github.com/Kikobeats/git-dirty#git-dirty) – Ensures the working directory is clean and that there are no unpulled changes.

@@ -10,9 +10,21 @@ if ! git fetch --prune --quiet 2> /dev/null; then
   exit 1;
 fi
 
+git worktree prune
+
 current="$(git rev-parse --abbrev-ref HEAD)"
+worktree_list="$(git worktree list --porcelain)"
+main_worktree="$(printf '%s\n' "$worktree_list" | awk 'NR == 1 { print substr($0, 10) }')"
 
 declare -a branches
+
+# Print the path of the worktree that has the branch checked out, if any
+worktree_of() {
+  printf '%s\n' "$worktree_list" | awk -v ref="refs/heads/$1" '
+    /^worktree / { path = substr($0, 10) }
+    $0 == "branch " ref { print path; exit }
+  '
+}
 
 # Check if a branch was part of remote workflow (pushed at some point)
 was_pushed() {
@@ -83,19 +95,58 @@ if command -v gh &> /dev/null && gh auth status &> /dev/null; then
   fi
 fi
 
-if [[ ${#branches[@]} -eq 0 ]]; then
+# branches checked out in another worktree go with their worktree, unless it has work in it
+declare -a removable worktrees skipped
+for branch in "${branches[@]}"; do
+  worktree="$(worktree_of "$branch")"
+  if [[ -z "$worktree" ]]; then
+    removable+=("$branch")
+    worktrees+=("")
+  elif [[ "$worktree" == "$main_worktree" ]]; then
+    skipped+=("$branch (checked out in main worktree $worktree)")
+  elif [[ -n "$(git -C "$worktree" status --porcelain 2> /dev/null)" ]]; then
+    skipped+=("$branch (uncommitted changes in worktree $worktree)")
+  else
+    removable+=("$branch")
+    worktrees+=("$worktree")
+  fi
+done
+
+if [[ ${#skipped[@]} -gt 0 ]]; then
+  echo
+  printf '  skipped %s\n' "${skipped[@]}"
+fi
+
+if [[ ${#removable[@]} -eq 0 ]]; then
   printf "\n  Nothing to garbage."
   exit
 fi
 
 echo
-printf '  %s\n' "${branches[@]}"
+for i in "${!removable[@]}"; do
+  if [[ -n "${worktrees[$i]}" ]]; then
+    printf '  %s (and worktree %s)\n' "${removable[$i]}" "${worktrees[$i]}"
+  else
+    printf '  %s\n' "${removable[$i]}"
+  fi
+done
 echo
 
 read -rp "  Will be removed. Continue? (y/N) " -n 1
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   echo && echo
-  message=$(git branch -D "${branches[@]}")
-  echo "${message//Deleted/  Deleted}"
+  declare -a deletable
+  for i in "${!removable[@]}"; do
+    if [[ -z "${worktrees[$i]}" ]]; then
+      deletable+=("${removable[$i]}")
+    elif git worktree remove "${worktrees[$i]}"; then
+      echo "  Removed worktree ${worktrees[$i]}"
+      deletable+=("${removable[$i]}")
+    fi
+  done
+  if [[ ${#deletable[@]} -gt 0 ]]; then
+    message=$(git branch -D "${deletable[@]}")
+    echo "${message//Deleted/  Deleted}"
+  fi
 fi
