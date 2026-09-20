@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.2.0 (2026-09-20)
+
+
+### Features
+
+* remove worktrees together with their garbage branches ([#22](https://github.com/kikobeats/git-garbage/issues/22)) ([966e4f6](https://github.com/kikobeats/git-garbage/commit/966e4f665b382aba132cd2f2f6a06cc7f0ab6f81))
+
 ### 1.1.22 (2026-08-03)
 
 ### 1.1.21 (2026-07-30)
