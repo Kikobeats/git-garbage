@@ -26,6 +26,15 @@ worktree_of() {
   '
 }
 
+is_locked_worktree() {
+  printf '%s\n' "$worktree_list" | awk -v entry="worktree $1" '
+    $0 == entry { inside = 1; next }
+    inside && /^locked/ { locked = 1; exit }
+    inside && NF == 0 { exit }
+    END { exit locked ? 0 : 1 }
+  '
+}
+
 # Check if a branch was part of remote workflow (pushed at some point)
 was_pushed() {
   local branch="$1"
@@ -104,6 +113,8 @@ for branch in "${branches[@]}"; do
     worktrees+=("")
   elif [[ "$worktree" == "$main_worktree" ]]; then
     skipped+=("$branch (checked out in main worktree $worktree)")
+  elif is_locked_worktree "$worktree"; then
+    skipped+=("$branch (locked worktree $worktree)")
   elif [[ -n "$(git -C "$worktree" status --porcelain 2> /dev/null)" ]]; then
     skipped+=("$branch (uncommitted changes in worktree $worktree)")
   else

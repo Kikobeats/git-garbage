@@ -46,7 +46,10 @@ without_gh() {
 }
 
 git_quiet() {
-  git -c init.defaultBranch=master -c user.name=test -c user.email=test@test "$@" > /dev/null 2>&1
+  if ! git -c init.defaultBranch=master -c user.name=test -c user.email=test@test "$@" > /dev/null 2>&1; then
+    echo "  fixture failed: git $*" >&2
+    exit 1
+  fi
 }
 
 create_repo() {
@@ -105,6 +108,8 @@ git_quiet -C "$SANDBOX/locked" worktree lock "$SANDBOX/locked-wt"
 output="$(run_garbage "$SANDBOX/locked")"
 assert "branch kept" branch_exists "$SANDBOX/locked" feature
 assert "worktree kept" test -d "$SANDBOX/locked-wt"
+assert "skip reason printed" contains "$output" "locked worktree"
+refute "not announced for removal" contains "$output" "and worktree"
 
 echo "run from a linked worktree never touches the main checkout branch"
 create_repo linked
